@@ -4,21 +4,89 @@
     <meta charset="utf-8" />
     <title>Notes Platform</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* minimal styling — keep your existing CSS if you want */
-        body { font-family: Arial, sans-serif; margin: 0; background:#f7f7f7; }
-        header { background: linear-gradient(135deg,#6a11cb,#2575fc); color:#fff; padding:25px; text-align:center; font-size:26px; font-weight:700;}
-        #searchBar { width:90%; max-width:600px; margin:18px auto; display:block; padding:12px; border-radius:10px; border:1px solid #ccc; font-size:16px;}
-        .category-title { font-size:22px; font-weight:700; margin:24px 0 8px 12px; color:#333;}
-        .note-box { background:#fff; padding:14px; border-radius:12px; margin:10px; box-shadow:0 4px 10px rgba(0,0,0,0.08);}
-        .download-btn { display:inline-block; margin-top:10px; padding:10px 14px; background:linear-gradient(135deg,#ff9966,#ff5e62); color:#fff; border-radius:8px; text-decoration:none; font-weight:700;}
+        /* =========================
+           BASE STYLES
+        ========================= */
+        body { font-family: Arial, sans-serif; margin: 0; background:#f7f7f7; color:#333; transition: all 0.3s ease; }
+        header { background: linear-gradient(135deg,#6a11cb,#2575fc); color:#fff; padding:25px; text-align:center; font-size:26px; font-weight:700; transition: all 0.3s ease; }
+        #searchBar { width:90%; max-width:600px; margin:18px auto; display:block; padding:12px; border-radius:10px; border:1px solid #ccc; font-size:16px; transition: all 0.3s ease; }
+        .category-title { font-size:22px; font-weight:700; margin:24px 0 8px 12px; color:#333; transition: color 0.3s ease; }
+        .note-box { background:#fff; padding:14px; border-radius:12px; margin:10px; box-shadow:0 4px 10px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+        .download-btn { display:inline-block; margin-top:10px; padding:10px 14px; background:linear-gradient(135deg,#ff9966,#ff5e62); color:#fff; border-radius:8px; text-decoration:none; font-weight:700; transition: all 0.3s ease; }
         main { max-width:1100px; margin:0 auto 60px; padding:10px;}
-        .empty { color:#777; margin-left:12px; font-style:italic;}
+        .empty { color:#777; margin-left:12px; font-style:italic; }
+
+        /* =========================
+           DARK MODE BASE
+        ========================= */
+        body.dark {
+            background: #0f0f0f;
+            color: #e6e6e6;
+        }
+
+        body.dark header {
+            background: linear-gradient(135deg, #1a1a1a, #333);
+        }
+
+        body.dark #searchBar {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid #555;
+        }
+
+        body.dark .category-title {
+            color: #fff;
+        }
+
+        body.dark .note-box {
+            background: #1a1a1a;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.08);
+        }
+
+        body.dark .download-btn {
+            background: linear-gradient(135deg, #ff5e62, #c0392b);
+        }
+
+        /* =========================
+           DARK MODE TOGGLE BUTTON
+        ========================= */
+        .toggle-btn {
+            margin: 14px auto;
+            display: block;
+            padding: 10px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 0 10px rgba(255,255,255,0.7);
+        }
+
+        body.dark .toggle-btn {
+            background: rgba(0,0,0,0.6);
+            border-color: rgba(255,255,255,0.25);
+        }
+
+        body.dark .toggle-btn:hover {
+            background: rgba(0,0,0,0.8);
+            box-shadow: 0 0 10px rgba(0,150,255,0.6);
+        }
     </style>
 </head>
 <body>
 <header>📘 Notes Platform</header>
+
+<!-- Dark Mode Toggle -->
+<button id="darkToggle" class="toggle-btn">🌙 Dark Mode</button>
 
 <main>
   <input type="text" id="searchBar" placeholder="Search notes or categories...">
@@ -26,19 +94,9 @@
 </main>
 
 <script>
-/*
-  This expects a JSON file at notes/manifest.json with this shape:
-  {
-    "Chemistry": [
-      { "name": "chapter3.pdf", "file": "Chemistry/chapter3.pdf", "size": "1.97 MB" },
-      ...
-    ],
-    "Mathematics": [ ... ],
-    ...
-  }
-  The 'file' paths are relative to the notes/ folder.
-*/
-
+/* ----------------------------
+   Load manifest.json (Auto-update)
+------------------------------ */
 async function fetchManifest() {
   try {
     const res = await fetch('notes/manifest.json', { cache: "no-store" });
@@ -51,16 +109,18 @@ async function fetchManifest() {
 }
 
 function createCard(pdf) {
-  // sanitize basename for display (if needed)
   return `
     <div class="note-box" data-name="${pdf.name.toLowerCase()}" data-category="${(pdf._category||'').toLowerCase()}">
       <h3 style="margin:0 0 6px 0;">${pdf.name}</h3>
-      ${pdf.size ? `<p style="margin:0;color:#555">Size: ${pdf.size}</p>` : ''}
-      <a href="notes/${pdf.file}" class="download-btn" target="_blank" rel="noopener noreferrer" download>Download PDF</a>
+      ${pdf.size ? `<p style="margin:0;color:#bbb">Size: ${pdf.size}</p>` : ''}
+      <a href="notes/${pdf.file}" class="download-btn" target="_blank" download>Download PDF</a>
     </div>
   `;
 }
 
+/* ----------------------------
+   Render notes
+------------------------------ */
 function render(manifest) {
   const content = document.getElementById('content');
   content.innerHTML = '';
@@ -77,40 +137,55 @@ function render(manifest) {
     content.appendChild(title);
 
     if (!arr || arr.length === 0) {
-      const empty = document.createElement('p');
-      empty.className = 'empty';
-      empty.textContent = 'No notes yet.';
-      content.appendChild(empty);
+      content.innerHTML += '<p class="empty">No notes yet.</p>';
       continue;
     }
 
     arr.forEach(pdf => {
-      // attach category to pdf for searching
       pdf._category = category;
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = createCard(pdf);
-      content.appendChild(wrapper.firstElementChild);
+      const wrap = document.createElement('div');
+      wrap.innerHTML = createCard(pdf);
+      content.appendChild(wrap.firstElementChild);
     });
   }
 }
 
+/* ----------------------------
+   Search
+------------------------------ */
 function applySearch() {
   const q = document.getElementById('searchBar').value.trim().toLowerCase();
   document.querySelectorAll('.note-box').forEach(box => {
-    const name = box.getAttribute('data-name') || '';
-    const category = box.getAttribute('data-category') || '';
-    if (!q || name.includes(q) || category.includes(q)) {
-      box.style.display = '';
-    } else {
-      box.style.display = 'none';
-    }
+    const name = box.dataset.name;
+    const cat = box.dataset.category;
+    box.style.display = (!q || name.includes(q) || cat.includes(q)) ? '' : 'none';
   });
 }
 
-(async function init(){
+/* ----------------------------
+   Dark mode toggle
+------------------------------ */
+const toggle = document.getElementById("darkToggle");
+
+if (localStorage.getItem("dark") === "true") {
+    document.body.classList.add("dark");
+    toggle.textContent = "☀️ Light Mode";
+}
+
+toggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    localStorage.setItem("dark", isDark);
+    toggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+});
+
+/* ----------------------------
+   Initialize
+------------------------------ */
+(async function init() {
   const manifest = await fetchManifest();
   if (!manifest) {
-    document.getElementById('content').innerHTML = '<p class="empty">Failed to load notes manifest. Make sure notes/manifest.json exists.</p>';
+    document.getElementById('content').innerHTML = '<p class="empty">Failed to load notes manifest.</p>';
     return;
   }
   render(manifest);
