@@ -4,100 +4,127 @@
     <meta charset="utf-8" />
     <title>Notes Platform</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+
     <style>
-        /* =========================
+        /* =====================================
            BASE STYLES
-        ========================= */
-        body { font-family: Arial, sans-serif; margin: 0; background:#f7f7f7; color:#333; transition: all 0.3s ease; }
-        header { background: linear-gradient(135deg,#6a11cb,#2575fc); color:#fff; padding:25px; text-align:center; font-size:26px; font-weight:700; transition: all 0.3s ease; }
-        #searchBar { width:90%; max-width:600px; margin:18px auto; display:block; padding:12px; border-radius:10px; border:1px solid #ccc; font-size:16px; transition: all 0.3s ease; }
-        .category-title {
-            font-size:22px;
-            font-weight:700;
-            margin:24px 0 8px 12px;
-            color:#333;
-            position: relative;
-            width: fit-content;
-            cursor: default;
+        ====================================== */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            background:#f7f7f7; 
+            color:#333; 
+            overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        header { 
+            background: linear-gradient(135deg,#6a11cb,#2575fc); 
+            color:#fff; 
+            padding:25px; 
+            text-align:center; 
+            font-size:26px; 
+            font-weight:700; 
+            transform: translateY(-40px);
+            opacity: 0;
+            animation: headerIn 0.9s ease forwards;
+        }
+
+        @keyframes headerIn {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        #searchBar { 
+            width:90%; 
+            max-width:600px; 
+            margin:18px auto; 
+            display:block; 
+            padding:12px; 
+            border-radius:10px; 
+            border:1px solid #ccc; 
+            font-size:16px;
+            opacity: 0;
+            transform: scale(0.8);
+            animation: searchPop 0.6s ease forwards 0.4s;
+        }
+
+        @keyframes searchPop {
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .category-title { 
+            font-size:22px; 
+            font-weight:700; 
+            margin:24px 0 8px 12px; 
+            color:#333; 
+            opacity: 0;
+            transform: translateX(-20px);
             transition: color 0.3s ease;
         }
 
-        /* CATEGORY TITLE UNDERLINE SLIDE */
-        .category-title::after {
-            content: "";
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            height: 3px;
-            width: 0%;
-            background: linear-gradient(90deg, #6a11cb, #2575fc);
-            border-radius: 50px;
-            transition: width 0.35s ease;
-        }
-        .category-title:hover::after {
-            width: 100%;
+        .note-box { 
+            background:#fff; 
+            padding:14px; 
+            border-radius:12px; 
+            margin:10px; 
+            box-shadow:0 4px 10px rgba(0,0,0,0.08); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
         }
 
-        .note-box {
-            background:#fff;
-            padding:14px;
-            border-radius:12px;
-            margin:10px;
-            box-shadow:0 4px 10px rgba(0,0,0,0.08);
-            transition: transform 0.25s ease, box-shadow 0.3s ease;
-        }
-
-        /* CARD HOVER */
         .note-box:hover {
-            transform: translateY(-6px) scale(1.02);
-            box-shadow:0 10px 18px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
         }
 
-        .download-btn {
-            display:inline-block;
-            margin-top:10px;
-            padding:10px 14px;
-            background:linear-gradient(135deg,#ff9966,#ff5e62);
-            color:#fff;
-            border-radius:8px;
-            text-decoration:none;
+        .download-btn { 
+            display:inline-block; 
+            margin-top:10px; 
+            padding:10px 14px; 
+            background:linear-gradient(135deg,#ff9966,#ff5e62); 
+            color:#fff; 
+            border-radius:8px; 
+            text-decoration:none; 
             font-weight:700;
             position: relative;
-            overflow:hidden;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            overflow: hidden;
+            transition: transform 0.25s ease;
         }
 
-        /* DOWNLOAD BUTTON HOVER */
         .download-btn:hover {
-            transform: scale(1.07);
-            box-shadow: 0 6px 16px rgba(255,94,98,0.4);
+            transform: scale(1.05);
         }
 
-        /* Shine effect */
-        .download-btn::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 60%;
-            height: 100%;
-            background: rgba(255,255,255,0.45);
-            transform: skewX(-20deg);
-            transition: all 0.4s ease;
-        }
-        .download-btn:hover::after {
-            left: 120%;
+        /* Ripple effect */
+        .download-btn:active::after {
+            content:'';
+            position:absolute;
+            left:50%;
+            top:50%;
+            width:200%;
+            height:200%;
+            background:rgba(255,255,255,0.4);
+            transform:translate(-50%,-50%);
+            border-radius:50%;
+            animation:ripple 0.5s ease-out;
         }
 
-        main { max-width:1100px; margin:0 auto 60px; padding:10px;}
+        @keyframes ripple {
+            from { transform: translate(-50%, -50%) scale(0); opacity: 0.7;}
+            to   { transform: translate(-50%, -50%) scale(1); opacity: 0;}
+        }
+
         .empty { color:#777; margin-left:12px; font-style:italic; }
 
-        /* =========================
-           DARK MODE BASE
-        ========================= */
+        main { max-width:1100px; margin:0 auto 60px; padding:10px;}
+
+        /* =====================================
+           DARK MODE
+        ====================================== */
         body.dark {
-            background: #0f0f0f;
-            color: #e6e6e6;
+            background:#0f0f0f;
+            color:#e6e6e6;
         }
 
         body.dark header {
@@ -105,27 +132,25 @@
         }
 
         body.dark #searchBar {
-            background: #1a1a1a;
-            color: #fff;
-            border: 1px solid #555;
+            background:#1a1a1a;
+            color:#fff;
+            border:1px solid #555;
         }
 
-        body.dark .category-title {
-            color: #fff;
-        }
+        body.dark .category-title { color:#fff; }
 
         body.dark .note-box {
-            background: #1a1a1a;
-            box-shadow: 0 4px 12px rgba(255,255,255,0.08);
+            background:#1a1a1a;
+            box-shadow:0 4px 12px rgba(255,255,255,0.08);
         }
 
         body.dark .download-btn {
-            background: linear-gradient(135deg, #ff5e62, #c0392b);
+            background:linear-gradient(135deg,#ff5e62,#c0392b);
         }
 
-        /* =========================
-           DARK MODE TOGGLE BUTTON 
-        ========================= */
+        /* =====================================
+           DARK MODE BUTTON
+        ====================================== */
         .toggle-btn {
             position: fixed;
             top: 20px;
@@ -137,42 +162,64 @@
             cursor: pointer;
             transition: 0.3s ease;
             border: 1px solid #888;
-            background: #ffffff;
-            color: #000;
+            background: white;
+            color: black;
             z-index: 999;
-        }
-
-        .toggle-btn:hover {
-            transform: scale(1.05);
         }
 
         body.dark .toggle-btn {
             background: #222;
             color: #fff;
-            border: 1px solid #555;
+            border-color: #555;
         }
 
-        body.dark .toggle-btn:hover {
-            background: #333;
+        /* =====================================
+           CUSTOM CURSOR GLOW
+        ====================================== */
+        .cursor-glow {
+            position: fixed;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: rgba(0, 150, 255, 0.35);
+            box-shadow: 0 0 20px rgba(0,150,255,0.6);
+            transform: translate(-50%, -50%);
+            transition: 0.1s linear;
+            z-index: 2000;
         }
     </style>
 </head>
+
 <body>
 <header>📘 Notes Platform</header>
 
-<!-- Dark Mode Toggle -->
 <button id="darkToggle" class="toggle-btn">🌙 Dark Mode</button>
 
+<!-- Cursor Glow -->
+<div class="cursor-glow"></div>
+
 <main>
-  <input type="text" id="searchBar" placeholder="Search notes or categories...">
-  <div id="content"></div>
+    <input type="text" id="searchBar" placeholder="Search notes or categories...">
+    <div id="content"></div>
 </main>
 
 <script>
-/* Load manifest.json */
+/* =====================================
+       CUSTOM CURSOR FOLLOWING
+===================================== */
+const glow = document.querySelector(".cursor-glow");
+document.addEventListener("mousemove", e => {
+    glow.style.left = e.pageX + "px";
+    glow.style.top = e.pageY + "px";
+});
+
+/* =====================================
+       LOAD MANIFEST.JSON
+===================================== */
 async function fetchManifest() {
   try {
-    const res = await fetch('notes/manifest.json', { cache: "no-store" });
+    const res = await fetch("notes/manifest.json", { cache: "no-store" });
     if (!res.ok) throw new Error("manifest not found");
     return await res.json();
   } catch (err) {
@@ -191,46 +238,80 @@ function createCard(pdf) {
   `;
 }
 
+/* =====================================
+       RENDER WITH ANIMATIONS
+===================================== */
 function render(manifest) {
-  const content = document.getElementById('content');
-  content.innerHTML = '';
+    const content = document.getElementById("content");
+    content.innerHTML = "";
 
-  if (!manifest || Object.keys(manifest).length === 0) {
-    content.innerHTML = '<p class="empty">No notes available yet.</p>';
-    return;
-  }
+    if (!manifest) {
+        content.innerHTML = '<p class="empty">No notes found.</p>';
+        return;
+    }
 
-  for (const [category, arr] of Object.entries(manifest)) {
-    const title = document.createElement('div');
-    title.className = 'category-title';
-    title.textContent = category;
-    content.appendChild(title);
+    let delay = 0;
 
-    arr.forEach(pdf => {
-      pdf._category = category;
-      const wrap = document.createElement('div');
-      wrap.innerHTML = createCard(pdf);
-      content.appendChild(wrap.firstElementChild);
-    });
-  }
+    for (const [category, arr] of Object.entries(manifest)) {
+
+        const title = document.createElement("div");
+        title.className = "category-title";
+        title.textContent = category;
+        title.style.animation = `fadeCat 0.6s ease forwards ${delay}s`;
+        content.appendChild(title);
+
+        delay += 0.15;
+
+        if (!arr.length) continue;
+
+        arr.forEach(pdf => {
+            pdf._category = category;
+            const box = document.createElement("div");
+            box.innerHTML = createCard(pdf);
+            const card = box.firstElementChild;
+
+            card.style.animation = `stagger 0.6s ease forwards ${delay}s`;
+            delay += 0.12;
+
+            content.appendChild(card);
+        });
+    }
 }
 
-/* Search */
+/* Keyframes for stagger */
+const style = document.createElement("style");
+style.innerHTML = `
+@keyframes stagger {
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeCat {
+    to { opacity: 1; transform: translateX(0); }
+}
+`;
+document.head.appendChild(style);
+
+/* =====================================
+       SEARCH FILTER
+===================================== */
 function applySearch() {
-  const q = document.getElementById('searchBar').value.trim().toLowerCase();
-  document.querySelectorAll('.note-box').forEach(box => {
-    const name = box.dataset.name;
-    const cat = box.dataset.category;
-    box.style.display = (!q || name.includes(q) || cat.includes(q)) ? '' : 'none';
+  const q = document.getElementById("searchBar").value.trim().toLowerCase();
+  document.querySelectorAll(".note-box").forEach(box => {
+      const name = box.dataset.name;
+      const cat = box.dataset.category;
+      box.style.display = (!q || name.includes(q) || cat.includes(q)) ? "" : "none";
   });
 }
 
-/* Dark mode toggle */
+/* =====================================
+       DARK MODE TOGGLE
+===================================== */
 const toggle = document.getElementById("darkToggle");
+
 if (localStorage.getItem("dark") === "true") {
     document.body.classList.add("dark");
     toggle.textContent = "☀️ Light Mode";
 }
+
 toggle.addEventListener("click", () => {
     document.body.classList.toggle("dark");
     const isDark = document.body.classList.contains("dark");
@@ -238,15 +319,13 @@ toggle.addEventListener("click", () => {
     toggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
 });
 
-/* Init */
+/* =====================================
+       INIT
+===================================== */
 (async function init() {
   const manifest = await fetchManifest();
-  if (!manifest) {
-    document.getElementById('content').innerHTML = '<p class="empty">Failed to load notes manifest.</p>';
-    return;
-  }
   render(manifest);
-  document.getElementById('searchBar').addEventListener('input', applySearch);
+  document.getElementById("searchBar").addEventListener("input", applySearch);
 })();
 </script>
 
