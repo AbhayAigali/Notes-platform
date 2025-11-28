@@ -1,17 +1,40 @@
 {
+  "Biology": [
+    {
+      "name": "chem 2.pdf",
+      "file": "notes/Biology/chem 2.pdf",
+      "size": "3.79 MB"
+    },
+    {
+      "name": "chem 3.pdf",
+      "file": "notes/Biology/chem 3.pdf",
+      "size": "3.59 MB"
+    }
+  ],
   "Chemistry": [
     {
       "name": "chapter3.pdf",
-      "file": "Chemistry/chapter3.pdf",
+      "file": "notes/Chemistry/chapter3.pdf",
       "size": "1.97 MB"
     }
   ],
   "Mathematics": [
     {
-      "name": "chapter4.pdf",
-      "file": "Mathematics/chapter4.pdf",
-      "size": "1.39 MB"
+      "name": "chem 4.pdf",
+      "file": "notes/Mathematics/chem 4.pdf",
+      "size": "2.21 MB"
+    },
+    {
+      "name": "chem 5.pdf",
+      "file": "notes/Mathematics/chem 5.pdf",
+      "size": "2.40 MB"
     }
   ],
-  "General": []
+  "Physics": [
+    {
+      "name": "chem 1.pdf",
+      "file": "notes/Physics/chem 1.pdf",
+      "size": "3.55 MB"
+    }
+  ]
 }

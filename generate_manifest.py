@@ -1,54 +1,50 @@
-# generate_manifest.py
+# generate_notes_json.py
+import os
 import json
 from pathlib import Path
 
-NOTES_DIR = Path("notes")
-OUT = NOTES_DIR / "manifest.json"
+notes_dir = Path("notes")
+out_file = Path("data/notes.json")
 
-def human_readable(size):
-    for unit in ['B','KB','MB','GB','TB']:
-        if size < 1024.0 or unit == 'TB':
-            return f"{size:.2f} {unit}"
-        size /= 1024.0
+result = {}
 
-def main():
-    if not NOTES_DIR.exists():
-        print("notes/ folder not found. Create a folder named 'notes' and place PDFs inside.")
-        return
-
-    manifest = {}
-    # check if notes/ has subfolders
-    subdirs = [p for p in sorted(NOTES_DIR.iterdir()) if p.is_dir()]
-    if subdirs:
-        # treat each subfolder as a category
-        for d in subdirs:
-            cat = d.name
-            manifest[cat] = []
-            for f in sorted(d.iterdir()):
-                if f.suffix.lower() == ".pdf":
-                    size = f.stat().st_size
-                    manifest[cat].append({
-                        "name": f.name,
-                        "file": f"{d.name}/{f.name}",
-                        "size": human_readable(size)
-                    })
-    else:
-        # no subfolders, use General category for PDFs in notes/
-        manifest["General"] = []
-        for f in sorted(NOTES_DIR.iterdir()):
+# if notes/ has subfolders (subjects)
+for subject_dir in sorted(notes_dir.iterdir()):
+    if subject_dir.is_dir():
+        subject = subject_dir.name
+        result[subject] = []
+        for f in sorted(subject_dir.iterdir()):
             if f.suffix.lower() == ".pdf":
                 size = f.stat().st_size
-                manifest["General"].append({
+                # human readable size
+                for unit in ['B','KB','MB','GB']:
+                    if size < 1024.0:
+                        readable = f"{size:.2f} {unit}"
+                        break
+                    size /= 1024.0
+                result[subject].append({
                     "name": f.name,
-                    "file": f.name,
-                    "size": human_readable(size)
+                    "file": str(f.as_posix()),
+                    "size": readable
                 })
+# if notes/ contains PDFs directly (no subjects) put them under "General"
+if not any(p.is_dir() for p in notes_dir.iterdir()):
+    result["General"] = []
+    for f in sorted(notes_dir.iterdir()):
+        if f.suffix.lower() == ".pdf":
+            size = f.stat().st_size
+            s = size
+            for unit in ['B','KB','MB','GB']:
+                if s < 1024.0:
+                    readable = f"{s:.2f} {unit}"
+                    break
+                s /= 1024.0
+            result["General"].append({
+                "name": f.name,
+                "file": str(f.as_posix()),
+                "size": readable
+            })
 
-    # ensure output folder exists (notes/)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(manifest, indent=2))
-    print("Wrote", OUT)
-    print("Categories:", ", ".join(manifest.keys()) if manifest else "None")
-
-if __name__ == "__main__":
-    main()
+out_file.parent.mkdir(parents=True, exist_ok=True)
+out_file.write_text(json.dumps(result, indent=2))
+print("Wrote", out_file)
