@@ -1,203 +1,314 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Notes Square — Apple UI</title>
+<title>Notes Square</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <style>
-  :root{
-    --bg:#f5f7fb;
-    --text:#111;
-    --muted:#6b7280;
-    --card:#ffffff;
-    --accent1:#4f46e5; /* indigo */
-    --accent2:#06b6d4; /* teal */
-    --btn-grad: linear-gradient(135deg,#60a5fa,#34d399);
-    --glass: rgba(255,255,255,0.7);
-  }
-  body.dark{
-    --bg:#0b1220;
-    --text:#e6eef6;
-    --muted:#9aa6b2;
-    --card:#0f1724;
-    --accent1:#5b21b6;
-    --accent2:#0891b2;
-    --btn-grad: linear-gradient(135deg,#34d399,#0ea5a3);
-    --glass: rgba(12,14,18,0.5);
-  }
+/* ---------------------------------------
+   AURORA BACKGROUND ANIMATION
+---------------------------------------- */
+body {
+    margin: 0;
+    font-family: "SF Pro Display", Arial, sans-serif;
+    background: #0a0f1c;
+    overflow-x: hidden;
+    transition: background 0.4s ease;
+}
 
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Segoe UI", Roboto, Inter, Arial;
-    background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;
-    transition: background .45s ease, color .45s ease;
-  }
-  main{max-width:1100px;margin:32px auto;padding:0 20px 80px}
+.aurora-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -5;
+    background: linear-gradient(120deg, #1a2b4f, #0d0f25);
+    overflow: hidden;
+}
 
-  header{
-    height:86px; display:flex; align-items:center; justify-content:center; position:relative;
-    background: linear-gradient(90deg,var(--accent1),var(--accent2));
-    border-radius:10px; padding:0 18px; color:#fff; box-shadow: 0 10px 30px rgba(2,6,23,0.08);
-  }
-  header .title{ font-weight:700; font-size:20px; display:flex; gap:10px; align-items:center }
+.aurora-layer {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -20%;
+    left: -20%;
+    background: radial-gradient(circle at 30% 30%, rgba(0,255,209,0.3), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(94,0,255,0.25), transparent 60%),
+                radial-gradient(circle at 50% 20%, rgba(0,132,255,0.3), transparent 60%);
+    animation: auroraMove 20s infinite linear;
+    filter: blur(80px);
+}
 
-  .search-wrap{ display:flex; justify-content:center; margin-top:18px }
-  #searchBar{
-    width:82%; max-width:760px; padding:12px 16px; border-radius:12px; border:1px solid rgba(0,0,0,0.06);
-    background:var(--card); color:var(--text); font-size:15px; outline:none; box-shadow: 0 6px 18px rgba(2,6,23,0.06);
-  }
-  body.dark #searchBar{ background:#0d1420; border:1px solid rgba(255,255,255,0.04) }
+@keyframes auroraMove {
+    0% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(10%, -10%) scale(1.2); }
+    100% { transform: translate(0,0) scale(1); }
+}
 
-  .category-title{ font-size:18px; font-weight:700; margin:30px 0 8px 6px; color:var(--text); opacity:0; transform:translateX(-18px); transition: all .42s cubic-bezier(.2,.9,.3,1) }
-  .category-title.revealed{ opacity:1; transform:none }
+/* ---------------------------------------
+   HEADER (GLASS)
+---------------------------------------- */
+header {
+    backdrop-filter: blur(18px);
+    background: rgba(255,255,255,0.12);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding: 25px;
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    border-radius: 0 0 20px 20px;
+}
 
-  .notes-list{ margin-top:8px }
-  .note-card{
-    background: var(--card); padding:16px;border-radius:14px;margin:12px 6px;
-    box-shadow: 0 12px 32px rgba(2,6,23,0.06);
-    opacity:0; transform: translateY(18px) scale(.995); transition: transform .32s ease, box-shadow .25s;
-  }
-  .note-card.revealed{ opacity:1; transform:none }
-  .note-card:hover{ transform: translateY(-8px) scale(1.02); box-shadow: 0 24px 60px rgba(2,6,23,0.12) }
+/* ---------------------------------------
+   DARK MODE HEADER FIX
+---------------------------------------- */
+body.light header {
+    background: rgba(255,255,255,0.7);
+    color: #000;
+}
 
-  .tilt{ perspective:1200px }
-  .tilt-inner{ transform-style:preserve-3d; transition: transform .12s linear }
+/* ---------------------------------------
+   SEARCH BAR (GLASS)
+---------------------------------------- */
+#searchBar {
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    display: block;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    backdrop-filter: blur(10px);
+}
 
-  .note-meta{ color:var(--muted); margin-top:8px; font-size:13px }
+body.light #searchBar {
+    background: rgba(255,255,255,0.7);
+    color: black;
+    border: 1px solid #aaa;
+}
 
-  .download-btn{
-    display:inline-block;padding:10px 14px;border-radius:12px;margin-top:10px;
-    background:var(--btn-grad); color:#fff; font-weight:800; text-decoration:none; position:relative; overflow:hidden;
-    box-shadow: 0 8px 26px rgba(3,7,18,0.08);
-  }
-  .ripple{ position:absolute; left:50%; top:50%; width:18px; height:18px; border-radius:50%; background: rgba(255,255,255,0.6); transform:translate(-50%,-50%) scale(0); animation: ripple .6s forwards }
-  @keyframes ripple{ to { transform:translate(-50%,-50%) scale(26); opacity:0 } }
-  .download-check{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; opacity:0; transition:opacity .18s }
+/* ---------------------------------------
+   CATEGORY TITLE
+---------------------------------------- */
+.category-title {
+    margin: 25px 0 10px 15px;
+    font-size: 22px;
+    font-weight: 700;
+    color: #e8f0ff;
+}
 
-  .float-wrap{ position:fixed; inset:0; pointer-events:none; z-index:0 }
-  .float{ position:absolute; width:100px; height:100px; border-radius:18px; background: linear-gradient(135deg, rgba(79,70,229,0.14), rgba(6,182,212,0.14)); filter: blur(16px); opacity:0.6; animation: bob 8s ease-in-out infinite }
-  .float.l1{ left:4%; top:18% } .float.l2{ right:8%; top:36%; width:140px; height:140px }
-  @keyframes bob{ 0%{ transform:translateY(0)} 50%{ transform:translateY(-22px)} 100%{ transform:translateY(0)} }
+body.light .category-title {
+    color: #222;
+}
 
-  /* glass toggle */
-  .toggle-wrap{ position:fixed; right:18px; top:16px; z-index:999; display:flex; gap:10px; align-items:center }
-  .toggle-btn{
-    padding:8px 14px;border-radius:12px; cursor:pointer; font-weight:700; backdrop-filter:blur(8px);
-    background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3)); border:1px solid rgba(255,255,255,0.6);
-    color:var(--text);
-  }
-  body.dark .toggle-btn{ background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); color:#fff; border:1px solid rgba(255,255,255,0.1) }
+/* ---------------------------------------
+   PDF CARD (GLASS)
+---------------------------------------- */
+.note-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(18px);
+    padding: 16px;
+    border-radius: 18px;
+    margin: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    color: white;
+    transform: perspective(700px) translateZ(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-  .stagger-child{ opacity:0; transform: translateY(12px) scale(.995) }
-  .stagger-child.stagger-in{ animation: childIn .44s cubic-bezier(.2,.9,.3,1) forwards; animation-delay: calc(var(--st-index) * .07s) }
-  @keyframes childIn{ to{ opacity:1; transform:none } }
+.note-box:hover {
+    transform: perspective(700px) translateZ(18px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+}
 
-  footer{ text-align:center; padding:22px 8px; color:var(--muted); font-size:13px; margin-top:28px }
+body.light .note-box {
+    background: rgba(255,255,255,0.6);
+    color: black;
+}
 
-  @media(max-width:760px){ header{ padding:10px } .float.l1{ display:none } .float.l2{ display:none } }
+/* ---------------------------------------
+   DOWNLOAD BUTTON (GLASS + RIPPLE)
+---------------------------------------- */
+.download-btn {
+    display: inline-block;
+    padding: 10px 14px;
+    margin-top: 10px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 700;
+    background: linear-gradient(135deg, #00ffbf, #0099ff);
+    text-decoration: none;
+    overflow: hidden;
+    position: relative;
+}
+
+.download-btn::after {
+    content: "";
+    position: absolute;
+    background: rgba(255,255,255,0.5);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+}
+
+.download-btn:active::after {
+    width: 200px;
+    height: 200px;
+    opacity: 0.6;
+    transition: width 0.4s ease, height 0.4s ease, opacity 0.4s ease;
+}
+
+/* ---------------------------------------
+   TOGGLE BUTTON
+---------------------------------------- */
+.toggle-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    backdrop-filter: blur(12px);
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+body.light .toggle-btn {
+    background: rgba(255,255,255,0.7);
+    color: black;
+    border: 1px solid #777;
+}
+
+/* ---------------------------------------
+   FOOTER
+---------------------------------------- */
+footer {
+    text-align: center;
+    padding: 25px;
+    font-size: 15px;
+    color: #c8d0ff;
+}
+
+footer span {
+    color: #ff4d7a;
+}
 </style>
 </head>
-<body>
 
-<div class="float-wrap" aria-hidden="true">
-  <div class="float l1"></div>
-  <div class="float l2"></div>
-</div>
+<body class="dark">
 
-<header id="siteHeader">
-  <div class="title"><span style="font-size:20px">📘</span> <span>Notes Square</span></div>
-</header>
+<div class="aurora-bg"><div class="aurora-layer"></div></div>
 
-<div class="toggle-wrap">
-  <button id="themeToggle" class="toggle-btn">🌙 Dark Mode</button>
-</div>
+<header>📘 Notes Square</header>
+
+<!-- Toggle Button -->
+<button id="darkToggle" class="toggle-btn">🌙 Dark Mode</button>
 
 <main>
-  <div class="search-wrap">
-    <input id="searchBar" placeholder="Search notes or categories..." autocomplete="off" />
-  </div>
-
-  <div id="contentArea"></div>
-
-  <footer>Made with ❤️ — by Laxmi Aigali</footer>
+    <input type="text" id="searchBar" placeholder="Search notes...">
+    <div id="content"></div>
 </main>
 
+<footer>
+Made with <span❤️</span> by Laxmi Aigali  
+</footer>
+
 <script>
-/* fetch manifest */
-async function fetchManifest(){
-  try{ const res = await fetch('notes/manifest.json',{cache:'no-store'}); if(!res.ok) throw new Error('manifest not found'); return await res.json() }
-  catch(e){ console.error(e); return null }
+/* ----------------------------
+   Load manifest
+------------------------------ */
+async function fetchManifest() {
+  try {
+    const res = await fetch("notes/manifest.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("manifest missing");
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
-/* create card */
-function createNoteCard(pdf){
-  const c = document.createElement('div'); c.className='note-card tilt';
-  c.innerHTML = `<div class="tilt-inner">
-    <div style="font-weight:700;font-size:16px">${pdf.name}</div>
-    <div class="note-meta">Size: ${pdf.size || '—'}</div>
-    <a class="download-btn" href="notes/${pdf.file}" download>Download PDF<span class="download-check">✓</span></a>
-  </div>`;
-  c.dataset.name = pdf.name.toLowerCase();
-  c.dataset.category = (pdf._category||'').toLowerCase();
-  const btn = c.querySelector('.download-btn'); btn.classList.add('magnetic');
-  btn.addEventListener('click', ()=>{
-    const r = document.createElement('span'); r.className='ripple'; btn.appendChild(r);
-    setTimeout(()=> r.remove(),700);
-    const ch = btn.querySelector('.download-check'); ch.style.opacity='1'; setTimeout(()=> ch.style.opacity='0',900);
-  });
-  return c;
+function createCard(pdf) {
+  return `
+    <div class="note-box" data-name="${pdf.name.toLowerCase()}" data-category="${(pdf._category||"").toLowerCase()}">
+        <h3>${pdf.name}</h3>
+        ${pdf.size ? `<p style="opacity:0.7;">Size: ${pdf.size}</p>` : ""}
+        <a href="notes/${pdf.file}" class="download-btn" download target="_blank">Download</a>
+    </div>
+  `;
 }
 
-/* render */
-function renderManifest(manifest){
-  const out = document.getElementById('contentArea'); out.innerHTML='';
-  if(!manifest){ out.innerHTML='<p style="color:var(--muted)">No notes available.</p>'; return; }
-  let idx=0;
-  for(const [category, arr] of Object.entries(manifest)){
-    const t = document.createElement('div'); t.className='category-title'; t.textContent=category; out.appendChild(t);
-    const wrap = document.createElement('div'); wrap.className='notes-list'; out.appendChild(wrap);
-    if(!arr || arr.length===0){ const e = document.createElement('div'); e.className='empty'; e.textContent='No notes yet.'; wrap.appendChild(e); continue; }
-    arr.forEach(pdf=>{
+/* ----------------------------
+   Render notes
+------------------------------ */
+function render(manifest) {
+  const content = document.getElementById("content");
+  content.innerHTML = "";
+
+  if (!manifest) {
+    content.innerHTML = "<p>No notes found.</p>";
+    return;
+  }
+
+  for (const [category, list] of Object.entries(manifest)) {
+    const title = document.createElement("div");
+    title.className = "category-title";
+    title.textContent = category;
+    content.appendChild(title);
+
+    list.forEach(pdf => {
       pdf._category = category;
-      const card = createNoteCard(pdf); card.classList.add('stagger-child'); card.style.setProperty('--st-index', idx);
-      wrap.appendChild(card); idx++;
+      const wrap = document.createElement("div");
+      wrap.innerHTML = createCard(pdf);
+      content.appendChild(wrap.firstElementChild);
     });
   }
-  setupRevealObservers();
 }
 
-/* search */
-function applySearch(){ const q = (document.getElementById('searchBar').value||'').trim().toLowerCase(); document.querySelectorAll('.note-card').forEach(c=>{ const name=c.dataset.name||'',cat=c.dataset.category||''; c.style.display = (!q || name.includes(q)||cat.includes(q)) ? '' : 'none'; }) }
+/* ----------------------------
+   Search filter
+------------------------------ */
+document.addEventListener("input", () => {
+  const q = searchBar.value.toLowerCase();
+  document.querySelectorAll(".note-box").forEach(box => {
+    const name = box.dataset.name;
+    const cat = box.dataset.category;
+    box.style.display = (name.includes(q) || cat.includes(q)) ? "" : "none";
+  });
+});
 
-/* reveal & tilt */
-function setupRevealObservers(){
-  const items = document.querySelectorAll('.category-title, .note-card');
-  const obs = new IntersectionObserver((entries, o)=>{ entries.forEach(e=>{ if(e.isIntersecting){ const el=e.target; if(el.classList.contains('category-title')) el.classList.add('revealed'); else if(el.classList.contains('note-card')){ const i=Array.from(document.querySelectorAll('.note-card')).indexOf(el); el.style.transition = `transform .5s cubic-bezier(.2,.9,.3,1) ${i*0.06}s, opacity .5s ${i*0.06}s`; el.classList.add('revealed'); attachTilt(el); } o.unobserve(el); } }) }, {root:null, rootMargin:'0px 0px -8% 0px', threshold:0.06});
-  items.forEach(i=>obs.observe(i));
-}
+/* ----------------------------
+   Dark / Light Mode Toggle
+------------------------------ */
+const toggle = document.getElementById("darkToggle");
 
-function attachTilt(card){
-  const inner = card.querySelector('.tilt-inner'); if(!inner) return;
-  function move(e){ const r = card.getBoundingClientRect(); const cx=r.left + r.width/2, cy=r.top + r.height/2; const dx = e.clientX - cx, dy = e.clientY - cy; const rx = (dy / r.height) * -6, ry = (dx / r.width) * 8; inner.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(8px)`; }
-  function leave(){ inner.style.transform = ''; }
-  card.addEventListener('mousemove', move); card.addEventListener('mouseleave', leave);
-}
+toggle.addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  toggle.textContent = document.body.classList.contains("light")
+    ? "🌞 Light Mode"
+    : "🌙 Dark Mode";
+});
 
-/* magnetic */
-document.addEventListener('mousemove', (e)=>{ const mx=e.clientX, my=e.clientY; document.querySelectorAll('.magnetic').forEach(el=>{ const r=el.getBoundingClientRect(); const dx=mx-(r.left + r.width/2), dy=my-(r.top + r.height/2); const dist = Math.sqrt(dx*dx + dy*dy), max=160; if(dist < max){ const s = (1 - (dist/max)); el.style.transform = `translate(${dx*0.06*s}px, ${dy*0.04*s}px) scale(${1+0.03*s})`; el.style.zIndex = 40 } else { el.style.transform=''; el.style.zIndex=''; } }) });
-document.addEventListener('mouseleave', ()=> document.querySelectorAll('.magnetic').forEach(el=> el.style.transform=''));
-
-/* theme toggle */
-const themeToggle = document.getElementById('themeToggle');
-function applyStored(){
-  if(localStorage.getItem('dark')==='true'){ document.body.classList.add('dark'); themeToggle.textContent='☀️ Light Mode' } else { document.body.classList.remove('dark'); themeToggle.textContent='🌙 Dark Mode' }
-}
-themeToggle.addEventListener('click', ()=>{ document.body.classList.toggle('dark'); localStorage.setItem('dark', document.body.classList.contains('dark') ? 'true' : 'false'); applyStored(); });
-applyStored();
-
-/* init */
-(async function init(){ setTimeout(()=> document.querySelector('header').classList.add('enter-header'),60); const manifest = await fetchManifest(); if(!manifest){ document.getElementById('contentArea').innerHTML = '<p style="color:var(--muted)">Failed to load notes manifest.</p>'; return; } renderManifest(manifest); document.getElementById('searchBar').addEventListener('input', applySearch); })();
+/* ----------------------------
+   Init
+------------------------------ */
+(async () => {
+  const manifest = await fetchManifest();
+  render(manifest);
+})();
 </script>
+
 </body>
 </html>
